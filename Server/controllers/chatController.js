@@ -14,21 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createChat = void 0;
 const chat_1 = __importDefault(require("../models/chat"));
+const user_1 = __importDefault(require("../models/user"));
 function createChat(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { _users } = req.body;
+            let { _users } = req.body;
+            const users = yield user_1.default.find({ _id: { $in: _users } });
+            const activeUsers = users.filter((user) => user.isActive === true);
+            const activeObjectIDs = activeUsers.map((user) => user._id.toString());
+            const filteredUsers = _users.filter((id) => activeObjectIDs.includes(id));
             const dateCreated = Date.now();
-            const chat = new chat_1.default({ _users, dateCreated });
-            chat.save()
-                .then((savedChat) => {
-                res.status(201).json(savedChat);
-            })
-                .catch((error) => {
-                res.status(500).json({ error: `Internal server error: ${error}` });
-            });
+            const chat = new chat_1.default({ _users: filteredUsers, dateCreated });
+            yield chat.save();
+            res.status(201).json(chat);
         }
-        catch (error) { }
+        catch (error) {
+            res.status(500).json({ error: `Internal server error: ${error}` });
+        }
     });
 }
 exports.createChat = createChat;
