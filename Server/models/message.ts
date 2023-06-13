@@ -14,6 +14,10 @@ const messageSchema = new Schema({
     body: {
         type: String,
         required: true,
+    },
+    dateCreated: {
+        type: Date,
+        required: true
     }
 });
 

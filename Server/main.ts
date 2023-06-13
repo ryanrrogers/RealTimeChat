@@ -4,6 +4,7 @@ import {createUser, deactivateUser, getUser, updateUser} from "./controllers/use
 import {createChat} from "./controllers/chatController";
 import {authenticate, authenticateToken} from "./controllers/authController";
 import mongoose from "mongoose";
+import {createMessage} from "./controllers/messageController";
 
 async function startServer() {
 
@@ -27,6 +28,8 @@ async function startServer() {
     app.put('/api/users/deactivate/:displayName', authenticateToken, deactivateUser);
 
     app.post('/api/chats/post', authenticateToken, createChat);
+
+    app.post('/api/messages/post', authenticateToken, createMessage);
 
     app.post('/api/authenticate', authenticate);
 

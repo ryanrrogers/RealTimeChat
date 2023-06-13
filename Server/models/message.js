@@ -15,6 +15,10 @@ const messageSchema = new mongoose_1.Schema({
     body: {
         type: String,
         required: true,
+    },
+    dateCreated: {
+        type: Date,
+        required: true
     }
 });
 const Message = (0, mongoose_1.model)('Message', messageSchema);
