@@ -26,6 +26,11 @@ const userSchema = new Schema({
     dateCreated: {
         type: Date,
         required: true
+    },
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true
     }
 });
 

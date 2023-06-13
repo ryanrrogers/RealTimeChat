@@ -20,13 +20,13 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const crypto_1 = __importDefault(require("crypto"));
 const user_1 = __importDefault(require("../models/user"));
 const { Strategy: JwtStrategy, ExtractJwt } = passport_jwt_1.default;
-const jwtSecret = crypto_1.default.randomBytes(32).toString('hex');
+const authTokenSecret = crypto_1.default.randomBytes(32).toString('hex');
 const refreshTokenSecret = crypto_1.default.randomBytes(32).toString('hex');
-const jwtOptions = {
+const jwtAuthOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: jwtSecret
+    secretOrKey: authTokenSecret
 };
-passport_1.default.use(new JwtStrategy(jwtOptions, (payload, done) => {
+passport_1.default.use(new JwtStrategy(jwtAuthOptions, (payload, done) => {
     user_1.default.findById(payload.userId)
         .then((user) => {
         return done(null, user !== null && user !== void 0 ? user : false);
@@ -51,9 +51,11 @@ function authenticate(req, res) {
                     return res.status(401).json({ error: 'Invalid password.' });
                 }
                 // Password matches, generate tokens
-                const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, jwtSecret, { expiresIn: '1h' });
+                const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
                 const refreshToken = jsonwebtoken_1.default.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
-                res.status(200).json({ accessToken, refreshToken });
+                // Set the new tokens in the response headers or cookies
+                res.cookie('Authorization', accessToken, { httpOnly: true, secure: true });
+                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
             });
         }).catch((error) => {
             res.status(500).json({ error: `Internal server error: ${error}` });
@@ -62,15 +64,25 @@ function authenticate(req, res) {
 }
 exports.authenticate = authenticate;
 function authenticateToken(req, res, next) {
-    passport_1.default.authenticate('jwt', { session: false }, (error, user, info) => {
+    passport_1.default.authenticate('jwt', { session: false }, (error, user, info) => __awaiter(this, void 0, void 0, function* () {
         if (error) {
             return res.status(401).json({ error: `Unauthorized: ${error}` });
         }
         if (!user) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        req.user = user;
-        next();
-    })(req, res, next);
+        try {
+            const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
+            const refreshToken = jsonwebtoken_1.default.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
+            // Set the new tokens in the response headers or cookies
+            res.cookie('Authorization', accessToken, { httpOnly: true, secure: true });
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+            req.user = user;
+            next();
+        }
+        catch (error) {
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }))(req, res, next);
 }
 exports.authenticateToken = authenticateToken;

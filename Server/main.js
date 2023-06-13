@@ -31,8 +31,9 @@ function startServer() {
         app.use(express_1.default.json());
         app.post('/api/users/post', userController_1.createUser);
         app.get('/api/users/get/:displayName?', authController_1.authenticateToken, userController_1.getUser);
-        app.put('/api/users/put/:displayName', userController_1.updateUser);
-        app.post('/api/chats/post', chatController_1.createChat);
+        app.put('/api/users/put/:displayName', authController_1.authenticateToken, userController_1.updateUser);
+        app.put('/api/users/deactivate/:displayName', authController_1.authenticateToken, userController_1.deactivateUser);
+        app.post('/api/chats/post', authController_1.authenticateToken, chatController_1.createChat);
         app.post('/api/authenticate', authController_1.authenticate);
         app.listen(port, () => {
             console.log(`Server listening on port ${port}`);

@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import {createUser, getUser, updateUser} from "./controllers/userController";
+import {createUser, deactivateUser, getUser, updateUser} from "./controllers/userController";
 import {createChat} from "./controllers/chatController";
 import {authenticate, authenticateToken} from "./controllers/authController";
 import mongoose from "mongoose";
@@ -23,9 +23,10 @@ async function startServer() {
 
     app.post('/api/users/post', createUser);
     app.get('/api/users/get/:displayName?', authenticateToken, getUser);
-    app.put('/api/users/put/:displayName', updateUser);
+    app.put('/api/users/put/:displayName', authenticateToken, updateUser);
+    app.put('/api/users/deactivate/:displayName', authenticateToken, deactivateUser);
 
-    app.post('/api/chats/post', createChat);
+    app.post('/api/chats/post', authenticateToken, createChat);
 
     app.post('/api/authenticate', authenticate);
 

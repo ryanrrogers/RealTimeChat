@@ -56,11 +56,28 @@ export async function updateUser(req: Request, res: Response) {
         const updatedUser = await User.findOneAndUpdate({ displayName }, { firstName, lastName, email, password }, { new: true });
 
         if (!updatedUser) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ error: 'User not found' });
         }
 
         res.status(200).json(updatedUser);
     } catch(error) {
-        res.status(500).json({ message: `Internal server error: ${error}` });
+        res.status(500).json({ error: `Internal server error: ${error}` });
+    }
+}
+
+export async function deactivateUser(req: Request, res: Response) {
+    const displayName = req.params.displayName.toLowerCase();
+    const isActive = false;
+
+    try {
+        const updatedUser = await User.findOneAndUpdate({ displayName }, { isActive }, { new: true });
+
+        if (!updateUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ error: `Internal server error: ${error}` });
     }
 }

@@ -8,15 +8,15 @@ import User from "../models/user";
 
 const {Strategy: JwtStrategy, ExtractJwt} = passportJWT;
 
-const jwtSecret = crypto.randomBytes(32).toString('hex');
+const authTokenSecret = crypto.randomBytes(32).toString('hex');
 const refreshTokenSecret = crypto.randomBytes(32).toString('hex');
 
-const jwtOptions = {
+const jwtAuthOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: jwtSecret
+    secretOrKey: authTokenSecret
 };
 
-passport.use(new JwtStrategy(jwtOptions, (payload, done) => {
+passport.use(new JwtStrategy(jwtAuthOptions, (payload, done) => {
     User.findById(payload.userId)
         .then((user) => {
             return done(null, user ?? false);
@@ -45,10 +45,12 @@ export async function authenticate(req: Request, res: Response) {
                 }
 
                 // Password matches, generate tokens
-                const accessToken = jwt.sign({ userId: user._id }, jwtSecret, { expiresIn: '1h' });
+                const accessToken = jwt.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
                 const refreshToken = jwt.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
 
-                res.status(200).json({ accessToken, refreshToken });
+                // Set the new tokens in the response headers or cookies
+                res.cookie('Authorization', accessToken, { httpOnly: true, secure: true });
+                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
             });
         }).catch((error) => {
         res.status(500).json({ error: `Internal server error: ${error}` });
@@ -57,14 +59,26 @@ export async function authenticate(req: Request, res: Response) {
 
 
 export function authenticateToken(req: Request, res: Response, next: any) {
-    passport.authenticate('jwt', {session: false}, (error: any, user: any, info: any) => {
+    passport.authenticate('jwt', { session: false }, async (error: any, user: any, info: any) => {
         if (error) {
-            return res.status(401).json({error: `Unauthorized: ${error}`});
+            return res.status(401).json({ error: `Unauthorized: ${error}` });
         }
         if (!user) {
-            return res.status(401).json({error: 'Unauthorized'});
+            return res.status(401).json({ error: 'Unauthorized' });
         }
-        req.user = user;
-        next();
+
+        try {
+            const accessToken = jwt.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
+            const refreshToken = jwt.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
+
+            // Set the new tokens in the response headers or cookies
+            res.cookie('Authorization', accessToken, { httpOnly: true, secure: true });
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+
+            req.user = user;
+            next();
+        } catch (error) {
+            return res.status(500).json({ error: 'Internal server error' });
+        }
     })(req, res, next);
 }
