@@ -38,28 +38,24 @@ passport_1.default.use(new JwtStrategy(jwtAuthOptions, (payload, done) => {
 function authenticate(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { email, password } = req.body;
-        user_1.default.findOne({ email })
-            .then((user) => {
+        try {
+            const user = yield user_1.default.findOne({ email });
             if (!user) {
-                return res.status(404).json({ error: `User not found.` });
+                return res.status(404).json({ error: 'User not found.' });
             }
-            bcrypt_1.default.compare(password, user.password, (error, isMatch) => {
-                if (error) {
-                    return res.status(500).json({ error: `A serverside error has occurred: ${error}` });
-                }
-                if (!isMatch) {
-                    return res.status(401).json({ error: 'Invalid password.' });
-                }
-                // Password matches, generate tokens
-                const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
-                const refreshToken = jsonwebtoken_1.default.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
-                // Set the new tokens in the response headers or cookies
-                res.cookie('Authorization', accessToken, { httpOnly: true, secure: true });
-                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-            });
-        }).catch((error) => {
+            const isMatch = yield bcrypt_1.default.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(401).json({ error: 'Invalid password.' });
+            }
+            const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
+            const refreshToken = jsonwebtoken_1.default.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
+            res.cookie('Authorization', accessToken, { httpOnly: true, secure: false });
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+            res.status(200).json({});
+        }
+        catch (error) {
             res.status(500).json({ error: `Internal server error: ${error}` });
-        });
+        }
     });
 }
 exports.authenticate = authenticate;
@@ -75,8 +71,8 @@ function authenticateToken(req, res, next) {
             const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
             const refreshToken = jsonwebtoken_1.default.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
             // Set the new tokens in the response headers or cookies
-            res.cookie('Authorization', accessToken, { httpOnly: true, secure: true });
-            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+            res.cookie('Authorization', accessToken, { httpOnly: true, secure: false });
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
             req.user = user;
             next();
         }
