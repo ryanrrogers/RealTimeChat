@@ -14,11 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const userController_1 = require("./controllers/userController");
-const chatController_1 = require("./controllers/chatController");
 const authController_1 = require("./controllers/authController");
 const mongoose_1 = __importDefault(require("mongoose"));
-const messageController_1 = require("./controllers/messageController");
+// Declare routes
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const chatRoutes_1 = __importDefault(require("./routes/chatRoutes"));
+const messageRoutes_1 = __importDefault(require("./routes/messageRoutes"));
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
         dotenv_1.default.config();
@@ -30,12 +31,9 @@ function startServer() {
         }
         yield mongoose_1.default.connect(dbUrl);
         app.use(express_1.default.json());
-        app.post('/api/users/post', userController_1.createUser);
-        app.get('/api/users/get/:displayName?', authController_1.authenticateToken, userController_1.getUser);
-        app.put('/api/users/put/:displayName', authController_1.authenticateToken, userController_1.updateUser);
-        app.put('/api/users/deactivate/:displayName', authController_1.authenticateToken, userController_1.deactivateUser);
-        app.post('/api/chats/post', authController_1.authenticateToken, chatController_1.createChat);
-        app.post('/api/messages/post', authController_1.authenticateToken, messageController_1.createMessage);
+        app.use('/api/users', userRoutes_1.default);
+        app.use('/api/chats', chatRoutes_1.default);
+        app.use('/api/messages', messageRoutes_1.default);
         app.post('/api/authenticate', authController_1.authenticate);
         app.listen(port, () => {
             console.log(`Server listening on port ${port}`);
