@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMessage = void 0;
+exports.getMessagesForChat = exports.createMessage = void 0;
 const message_1 = __importDefault(require("../models/message"));
 function createMessage(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -34,3 +34,14 @@ function createMessage(req, res) {
     });
 }
 exports.createMessage = createMessage;
+function getMessagesForChat(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let { _chat } = req.body;
+            const chat = new mongoose.Types.ObjectId(_chat);
+        }
+        finally {
+        }
+    });
+}
+exports.getMessagesForChat = getMessagesForChat;
