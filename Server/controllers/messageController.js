@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMessagesForChat = exports.createMessage = void 0;
+exports.deleteMessage = exports.updateMessage = exports.getMessagesForChat = exports.createMessage = void 0;
 const message_1 = __importDefault(require("../models/message"));
+const mongoose_1 = __importDefault(require("mongoose"));
 function createMessage(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -38,10 +39,56 @@ function getMessagesForChat(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             let { _chat } = req.body;
-            const chat = new mongoose.Types.ObjectId(_chat);
+            const chat = new mongoose_1.default.Types.ObjectId(_chat);
+            yield message_1.default.find({ _chat: { $in: [chat] } })
+                .then((messages) => {
+                res.status(200).json(messages);
+            })
+                .catch((error) => {
+                res.status(404).json({ error: `Could not find chat or messages: ${error}` });
+            });
         }
-        finally {
+        catch (error) {
+            res.status(500).json({ error: `Internal server error: ${error}` });
         }
     });
 }
 exports.getMessagesForChat = getMessagesForChat;
+function updateMessage(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let { _message, body } = req.body;
+            const message = new mongoose_1.default.Types.ObjectId(_message);
+            yield message_1.default.findByIdAndUpdate(message, { body: body }, { new: true })
+                .then((updatedMessage) => {
+                res.status(200).json(updatedMessage);
+            })
+                .catch((error) => {
+                res.status(404).json({ error: `Could not find message: ${error}` });
+            });
+        }
+        catch (error) {
+            res.status(500).json({ error: `Internal server error: ${error}` });
+        }
+    });
+}
+exports.updateMessage = updateMessage;
+function deleteMessage(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let { _message } = req.body;
+            const message = new mongoose_1.default.Types.ObjectId(_message);
+            yield message_1.default.findByIdAndRemove(message)
+                .then(() => {
+                res.status(200).json({ message: "Message deleted." });
+            })
+                .catch((error) => {
+                res.status(404).json({ message: `Could not find message: ${error}` });
+            });
+        }
+        catch (error) {
+            res.status(500).json({ error: `Internal server error: ${error}` });
+        }
+    });
+}
+exports.deleteMessage = deleteMessage;
