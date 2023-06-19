@@ -1,17 +1,10 @@
-.card {
-    width: 25%;
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
+.align-items-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+  }
 
-@media (max-width: 767px) {
-    .card {
-        width: 70%;
-        position: fixed;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-}
+  .card {
+    width: 70%;
+  }

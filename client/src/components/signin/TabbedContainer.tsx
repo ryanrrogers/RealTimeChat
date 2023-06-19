@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Login from './Login';
 import Signup from './Signup';
-//import './TabbedContainer.css';
+import './TabbedContainer.css';
 
 function TabbedContainer() {
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
@@ -12,7 +12,7 @@ function TabbedContainer() {
 
     return (
         <div className="container">
-            <div className="d-flex justify-content-center mt-5">
+            <div className="d-flex justify-content-center mt-5 align-items-center">
                 <div className="card">
                     <div className="card-header">
                         <ul className="nav nav-tabs card-header-tabs">
