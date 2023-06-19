@@ -4,16 +4,24 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.css';
 import './index.scss';
-import App from './App';
+import TabbedContainer from './components/signin/TabbedContainer';
+import ErrorPage from './error-page';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Hello world!</div>
+    element: <App />,
+    errorElement: <ErrorPage />
   },
+  {
+    path: "/Login",
+    element: <TabbedContainer />
+  }
 ]);
 
 const root = ReactDOM.createRoot(
@@ -22,7 +30,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    <App />
   </React.StrictMode>
 );
 

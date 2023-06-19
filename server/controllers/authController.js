@@ -49,9 +49,13 @@ function authenticate(req, res) {
             }
             const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
             const refreshToken = jsonwebtoken_1.default.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
-            res.cookie('Authorization', accessToken, { httpOnly: true, secure: false });
-            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
-            res.status(200).json({});
+            // res.cookie('Authorization', accessToken, { httpOnly: false, secure: false });
+            // res.cookie('refreshToken', refreshToken, { httpOnly: false, secure: false });
+            res.status(200).json({
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                userID: user._id
+            });
         }
         catch (error) {
             res.status(500).json({ error: `Internal server error: ${error}` });
@@ -71,8 +75,8 @@ function authenticateToken(req, res, next) {
             const accessToken = jsonwebtoken_1.default.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
             const refreshToken = jsonwebtoken_1.default.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
             // Set the new tokens in the response headers or cookies
-            res.cookie('Authorization', accessToken, { httpOnly: true, secure: false });
-            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+            res.cookie('Authorization', accessToken, { httpOnly: false, secure: false });
+            res.cookie('refreshToken', refreshToken, { httpOnly: false, secure: false });
             req.user = user;
             next();
         }

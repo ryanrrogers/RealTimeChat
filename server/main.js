@@ -37,7 +37,10 @@ function startServer() {
         }
         yield mongoose_1.default.connect(dbUrl);
         app.use((0, cors_1.default)({
-            origin: 'http://localhost:3000'
+            origin: 'http://localhost:3000',
+            methods: ['POST', 'GET', 'PUT', 'DELETE'],
+            allowedHeaders: ['Content-Type', 'Authorization'],
+            credentials: true
         }));
         // socket event listeners
         io.on('connection', (socket) => {

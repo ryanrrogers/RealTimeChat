@@ -30,7 +30,10 @@ async function startServer() {
 
     app.use(
         cors({
-            origin: 'http://localhost:3000'
+            origin: 'http://localhost:3000',
+            methods: ['POST', 'GET', 'PUT', 'DELETE'],
+            allowedHeaders: ['Content-Type', 'Authorization'],
+            credentials: true
         })
     );
 

@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import passport from 'passport';
 import passportJWT from 'passport-jwt';
 import jwt from 'jsonwebtoken';
@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import User from "../models/user";
 
-const {Strategy: JwtStrategy, ExtractJwt} = passportJWT;
+const { Strategy: JwtStrategy, ExtractJwt } = passportJWT;
 
 const authTokenSecret = crypto.randomBytes(32).toString('hex');
 const refreshTokenSecret = crypto.randomBytes(32).toString('hex');
@@ -43,10 +43,14 @@ export async function authenticate(req: Request, res: Response) {
         const accessToken = jwt.sign({ userId: user._id }, authTokenSecret, { expiresIn: '1h' });
         const refreshToken = jwt.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
 
-        res.cookie('Authorization', accessToken, { httpOnly: true, secure: false });
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+        // res.cookie('Authorization', accessToken, { httpOnly: false, secure: false });
+        // res.cookie('refreshToken', refreshToken, { httpOnly: false, secure: false });
 
-        res.status(200).json({});
+        res.status(200).json({
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            userID: user._id
+        });
     } catch (error) {
         res.status(500).json({ error: `Internal server error: ${error}` });
     }
@@ -67,8 +71,8 @@ export function authenticateToken(req: Request, res: Response, next: any) {
             const refreshToken = jwt.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: '24h' });
 
             // Set the new tokens in the response headers or cookies
-            res.cookie('Authorization', accessToken, { httpOnly: true, secure: false });
-            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+            res.cookie('Authorization', accessToken, { httpOnly: false, secure: false });
+            res.cookie('refreshToken', refreshToken, { httpOnly: false, secure: false });
 
             req.user = user;
             next();
