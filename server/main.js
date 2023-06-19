@@ -18,6 +18,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const authController_1 = require("./controllers/authController");
 const mongoose_1 = __importDefault(require("mongoose"));
 const http_1 = __importDefault(require("http"));
+const cors_1 = __importDefault(require("cors"));
 // Declare routes
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const chatRoutes_1 = __importDefault(require("./routes/chatRoutes"));
@@ -35,6 +36,9 @@ function startServer() {
             throw new Error('Cannot find DB string!');
         }
         yield mongoose_1.default.connect(dbUrl);
+        app.use((0, cors_1.default)({
+            origin: 'http://localhost:3000'
+        }));
         // socket event listeners
         io.on('connection', (socket) => {
             console.log('A user has connected');

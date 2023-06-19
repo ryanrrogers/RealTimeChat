@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { authenticate } from "./controllers/authController";
 import mongoose from "mongoose";
 import http from 'http';
+import cors from 'cors';
 
 
 // Declare routes
@@ -26,6 +27,12 @@ async function startServer() {
     }
 
     await mongoose.connect(dbUrl);
+
+    app.use(
+        cors({
+            origin: 'http://localhost:3000'
+        })
+    );
 
     // socket event listeners
     io.on('connection', (socket) => {
