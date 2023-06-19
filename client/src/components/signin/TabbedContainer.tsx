@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Login from './Login';
 import Signup from './Signup';
-import './TabbedContainer.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import './TabbedContainer.scss';
+
 
 function TabbedContainer() {
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
@@ -12,10 +14,10 @@ function TabbedContainer() {
 
     return (
         <div className="container">
-            <div className="d-flex justify-content-center mt-5 align-items-center">
+            <div className="d-flex justify-content-center align-items-center">
                 <div className="card">
                     <div className="card-header">
-                        <ul className="nav nav-tabs card-header-tabs">
+                        <ul className="nav nav-tabs card-header-tabs tabs">
                             <li className="nav-item">
                                 <button
                                     className={`nav-link ${activeTab === 'login' ? 'active' : ''}`}

@@ -1,0 +1,69 @@
+$primary-color: #575d6d;
+$secondary-color: #3f434f;
+$tert-color: #4ab134;
+$text-color: #eef9eb;
+$highlight-color: #3f962c;
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  background-color: $primary-color;
+  border: 0 0 2px 0;
+  border-color: transparent;
+  border-bottom-color: $text-color;
+  border-style: solid;
+  border-radius: 0px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+  background-color: $primary-color;
+  border: 0 0 2px 0;
+  border-color: transparent;
+  border-bottom-color: $tert-color;
+  border-style: solid;
+  border-radius: 0px;
+  outline: none !important;
+  box-shadow: none;
+}
+
+.align-items-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+}
+
+.btn-primary {
+  color: $text-color;
+  background-color: $tert-color;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #3f962c;
+}
+
+div.card {
+  width: 70%;
+  background-color: $primary-color;
+  color: $text-color;
+}
+
+.card-header {
+  border: none;
+}
+
+.nav-tabs .nav-link {
+  color: $text-color;
+}
+
+.card-header-tabs .nav-link.active {
+  color: $text-color;
+  background-color: $primary-color;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-color: $tert-color;
+}

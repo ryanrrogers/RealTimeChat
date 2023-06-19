@@ -1,10 +1,9 @@
-import './App.css';
 import TabbedContainer from './components/signin/TabbedContainer';
-import 'bootstrap/dist/css/bootstrap.css';
+import './App.scss';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App bg-primary-custom">
       <TabbedContainer />
     </div>
   );

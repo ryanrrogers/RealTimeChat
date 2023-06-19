@@ -1,0 +1,11 @@
+$primary-color: #3f434f;
+
+html, 
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.bg-primary-custom {
+    background-color: $primary-color;
+}
