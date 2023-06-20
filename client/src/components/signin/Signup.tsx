@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import './Signup.scss';
 
-const Signup = () => {
+type responseData = {
+    onResponse: (code: number, type: string) => void;
+}
+
+const Signup: React.FC<responseData> = ({ onResponse }) => {
 
     interface FormData {
         emailAddress: string;
@@ -9,6 +14,9 @@ const Signup = () => {
         lastName: string;
         password: string;
     }
+
+    const [isEmailError, setIsEmailError] = useState(false);
+    const [isDisplayNameError, setIsDisplayNameError] = useState(false);
 
     const [formData, setFormData] = useState({
         emailAddress: '',
@@ -35,12 +43,29 @@ const Signup = () => {
             })
         }
         let response = await fetch("http://127.0.0.1:8000/api/users/post", requestOptions);
-        console.log(response);
+        if (response.ok) {
+            onResponse(200, 'create');
+        } else {
+            const json = await response.json();
+            const error = json.error;
+            if (error.includes('E11000') && error.includes('displayName')) {
+                onResponse(400, 'duplicate displayName');
+                setIsDisplayNameError(true);
+            } else if (error.includes('E11000') && error.includes('email')) {
+                onResponse(400, 'duplicate email');
+                setIsEmailError(true);
+            }
+        }
 
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
+        if (name === 'emailAddress') {
+            setIsEmailError(false);
+        } else if (name === 'displayName') {
+            setIsDisplayNameError(false);
+        }
 
         setFormData((prevFormData: FormData) => ({
             ...prevFormData,
@@ -52,10 +77,12 @@ const Signup = () => {
         <form onSubmit={handleSubmit}>
             <div>
                 <div className="mb-3">
-                    <label htmlFor='email' className="form-label">
-                        Email Address
-                    </label>
-                    <input type="email" className="form-control" id="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} />
+                    <div className={isEmailError ? 'inputErrors': ''}>
+                        <label htmlFor='email' className="form-label">
+                            Email Address
+                        </label>
+                        <input type="email" className="form-control" id="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} />
+                    </div>
                 </div>
                 <div className="mb-3">
                     <label htmlFor='displayName' className="form-label">

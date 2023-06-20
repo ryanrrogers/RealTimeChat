@@ -1,12 +1,13 @@
 $primary-color: #575d6d;
 $secondary-color: #3f434f;
-$tert-color: #4ab134;
+$tert-color: #058cae;
 $text-color: #eef9eb;
-$highlight-color: #3f962c;
+$highlight-color: #06809f;
 
 input[type="text"],
 input[type="password"],
 input[type="email"] {
+  color: $text-color;
   background-color: $primary-color;
   border: 0 0 2px 0;
   border-color: transparent;
@@ -18,6 +19,7 @@ input[type="email"] {
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="email"]:focus {
+  color: $text-color;
   background-color: $primary-color;
   border: 0 0 2px 0;
   border-color: transparent;
@@ -42,7 +44,7 @@ input[type="email"]:focus {
 }
 
 .btn-primary:hover {
-  background-color: #3f962c;
+  background-color: $highlight-color;
 }
 
 div.card {
@@ -65,5 +67,9 @@ div.card {
   border-top: none;
   border-left: none;
   border-right: none;
+  border-color: $tert-color;
+}
+
+.card-header-tabs .nav-link:hover {
   border-color: $tert-color;
 }

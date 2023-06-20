@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ToastProvider } from 'react-toast-notifications';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -29,7 +30,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
   </React.StrictMode>
 );
 

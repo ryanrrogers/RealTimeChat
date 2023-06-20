@@ -1,0 +1,11 @@
+$error: #ef7575;
+
+.inputErrors input[type="email"] {
+    color: $error;
+    border-bottom-color: $error;
+  }
+  
+  .inputErrors label {
+    color: $error;
+    font-weight: 600;
+  }

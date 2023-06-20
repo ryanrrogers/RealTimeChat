@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useCookies } from 'react-cookie';
 
-const Login = () => {
+type responseData = {
+    onResponse: (code: number, type: string) => void;
+}
+
+const Login: React.FC<responseData> = ({ onResponse }) => {
     const [cookies, setCookie] = useCookies(['AccessToken', 'RefreshToken', 'UserID']);
 
     const [formData, setFormData] = useState({
@@ -28,6 +32,9 @@ const Login = () => {
                 setCookie('AccessToken', data.accessToken);
                 setCookie('RefreshToken', data.refreshToken);
                 setCookie('UserID', data.userID);
+            })
+            .then(() => {
+                onResponse(200, 'login');
             })
             .catch((error) => {
                 console.error(error);
