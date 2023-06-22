@@ -1,5 +1,5 @@
 {
-  "name": "rtmserver",
+  "name": "server",
   "version": "1.0.0",
   "description": "Backend server for Real Time Messaging app",
   "main": "main.js",

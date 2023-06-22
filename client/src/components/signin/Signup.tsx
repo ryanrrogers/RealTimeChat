@@ -14,9 +14,14 @@ const Signup: React.FC<responseData> = ({ onResponse }) => {
         lastName: string;
         password: string;
     }
-
-    const [isEmailError, setIsEmailError] = useState(false);
-    const [isDisplayNameError, setIsDisplayNameError] = useState(false);
+    
+    const [isError, setIsError] = useState({
+        emailAddress: false,
+        displayName: false,
+        firstName: false,
+        lastName: false,
+        password: false,
+    })
 
     const [formData, setFormData] = useState({
         emailAddress: '',
@@ -50,10 +55,12 @@ const Signup: React.FC<responseData> = ({ onResponse }) => {
             const error = json.error;
             if (error.includes('E11000') && error.includes('displayName')) {
                 onResponse(400, 'duplicate displayName');
-                setIsDisplayNameError(true);
+                isError.displayName = true;
+                setIsError(isError);
             } else if (error.includes('E11000') && error.includes('email')) {
                 onResponse(400, 'duplicate email');
-                setIsEmailError(true);
+                isError.emailAddress = true;
+                setIsError(isError);
             }
         }
 
@@ -62,9 +69,11 @@ const Signup: React.FC<responseData> = ({ onResponse }) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         if (name === 'emailAddress') {
-            setIsEmailError(false);
+            isError.emailAddress = false;
+            setIsError(isError);
         } else if (name === 'displayName') {
-            setIsDisplayNameError(false);
+            isError.displayName = false;
+            setIsError(isError);
         }
 
         setFormData((prevFormData: FormData) => ({
@@ -77,7 +86,7 @@ const Signup: React.FC<responseData> = ({ onResponse }) => {
         <form onSubmit={handleSubmit}>
             <div>
                 <div className="mb-3">
-                    <div className={isEmailError ? 'inputErrors': ''}>
+                    <div className={isError.emailAddress ? 'inputErrors': ''}>
                         <label htmlFor='email' className="form-label">
                             Email Address
                         </label>
